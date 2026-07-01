@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Sem Atraso</title>
+  <style>
+    :root {
+      --bg: #0c0c10;
+      --card: rgba(255,255,255,0.03);
+      --card-hover: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.07);
+      --border-hover: rgba(255,255,255,0.14);
+      --primary: #8b5cf6;
+      --primary-glow: rgba(139,92,246,0.25);
+      --accent: #10b981;
+      --accent-glow: rgba(16,185,129,0.2);
+      --danger: #ef4444;
+      --warn: #f59e0b;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 340px;
+      min-height: 100px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      padding: 16px;
+      overflow: hidden;
+      animation: fadeIn .2s ease-out;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    body.off .card, body.off .sec { opacity: 0.35; pointer-events: none; transition: opacity 0.3s; }
+    body.off header { opacity: 1; }
+
+    @keyframes marquee { from { transform: translate3d(0,0,0); } to { transform: translate3d(-50%,0,0); } }
+    @keyframes slideUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes seekPulse { 0%,100% { opacity:1; } 50% { opacity:.5; } }
+    @keyframes breathe { 0%,100% { opacity:1; } 50% { opacity:.7; } }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.4; } }
+
+    header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+    .logo-row { display:flex; align-items:center; gap:8px; }
+    .logo-row img { transition: transform 0.2s ease; }
+    .logo-row img:hover { transform: scale(1.12) rotate(-4deg); }
+    h1 { font-size:13px; font-weight:600; letter-spacing:-.01em; }
+    .hdr-right { display:flex; align-items:center; gap:7px; }
+
+    .dbg-btn {
+      background: none; border: 1px solid var(--border); border-radius: 4px;
+      color: var(--muted); font-size: 11px; padding: 2px 5px; cursor: pointer;
+      opacity: 0.35; transition: all 0.25s ease; line-height: 1;
+    }
+    .dbg-btn:hover { opacity: 0.7; border-color: var(--border-hover); transform: scale(1.08); }
+    .dbg-btn.on { opacity: 1; border-color: var(--primary); color: var(--primary); box-shadow: 0 0 6px var(--primary-glow); }
+
+    .sw { position:relative; width:40px; height:20px; }
+    .sw input { opacity:0; width:0; height:0; }
+    .sw .tr { position:absolute; cursor:pointer; inset:0; background:#334155; border-radius:20px; transition: all .25s ease; }
+    .sw .tr::before { content:""; position:absolute; height:14px; width:14px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition: all .25s ease; }
+    .sw input:checked+.tr { background:var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+    .sw input:checked+.tr::before { transform:translateX(20px); }
+    .sw:hover .tr { filter: brightness(1.15); }
+
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 12px; margin-bottom: 8px;
+      animation: slideUp .25s ease-out backwards;
+      transition: all 0.25s ease;
+    }
+    .card:hover { background: var(--card-hover); border-color: var(--border-hover); box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
+    .card:nth-child(2) { animation-delay:.04s; }
+    .card:nth-child(3) { animation-delay:.08s; }
+    .card:nth-child(4) { animation-delay:.12s; }
+
+    .status { display:flex; flex-direction:column; align-items:center; text-align:center; padding:10px 6px; }
+    .s-label { font-size:9px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:2px; }
+    .lat-big { font-size:36px; font-weight:700; letter-spacing:-.03em; line-height:1.1; transition: color .4s, transform 0.2s; color:#94a3b8; }
+    .lat-big.ok { color:var(--accent); }
+    .lat-big.seek { color:var(--warn); animation:seekPulse 1.5s ease-in-out infinite; }
+    .lat-big.adj { color:#c084fc; animation:breathe 2.5s ease-in-out infinite; }
+    .sync-line { font-size:10px; font-weight:500; display:flex; align-items:center; gap:4px; margin-top:2px; transition:color .3s; color:var(--muted); }
+    .sync-line.ok { color:var(--accent); }
+    .sync-line.seek { color:var(--warn); }
+    .sync-line.adj { color:#c084fc; }
+    .sync-line.err { color:var(--danger); }
+    .dot { width:5px; height:5px; border-radius:50%; background:var(--accent); display:none; animation:pulse 1.4s infinite; }
+
+    .spd {
+      font-size:9px; background:rgba(255,255,255,.05); padding:2px 7px; border-radius:8px;
+      margin-top:4px; color:var(--muted); transition: all 0.2s ease;
+    }
+    .spd.fast { color:#c084fc; background:rgba(139,92,246,0.12); }
+
+    .sec { font-size:9px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:4px; padding-left:2px; transition: opacity 0.3s; }
+
+    .live-row { display:flex; align-items:center; gap:10px; }
+
+    .av-wrap { position:relative; flex-shrink:0; }
+    .av {
+      width:36px; height:36px; border-radius:50%; background:#1e293b;
+      border:2px solid var(--border); object-fit:cover;
+      transition: all 0.25s ease;
+    }
+    .av.on { border-color:var(--accent); }
+    .av-wrap:hover .av { transform: scale(1.08); border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
+    .live-badge {
+      position:absolute; bottom:-2px; left:50%; transform:translateX(-50%);
+      font-size:6px; background:var(--danger); color:#fff; padding:1px 4px;
+      border-radius:2px; font-weight:700; white-space:nowrap; letter-spacing:.04em;
+      box-shadow: 0 1px 4px rgba(239,68,68,0.4);
+    }
+
+    .info { flex:1; min-width:0; overflow:hidden; }
+    .mq { overflow:hidden; white-space:nowrap; height:20px; position:relative; }
+    .mq-inner { display:inline-block; white-space:nowrap; font-size:11px; font-weight:600; line-height:20px; padding:2px 0; will-change:transform; }
+    .mq.go .mq-inner { animation:marquee var(--dur,18s) linear infinite; }
+    .ch-row { font-size:10px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px; }
+    .vw-row { font-size:9px; color:var(--muted); margin-top:2px; transition: color 0.2s; }
+
+    .match { display:flex; align-items:center; justify-content:center; gap:10px; margin-top:8px; padding:6px 10px; background:rgba(255,255,255,.04); border-radius:8px; transition: all 0.2s ease; }
+    .match:hover { background:rgba(255,255,255,.07); transform: scale(1.01); }
+    .match-team { display:flex; align-items:center; gap:5px; justify-content:center; }
+    .flag-img { width:16px; height:11px; border-radius:1px; object-fit:cover; border:1px solid rgba(255,255,255,0.15); display:block; transition: transform 0.2s; }
+    .flag-img:hover { transform: scale(1.2); }
+    .match-name { font-size:11px; font-weight:600; }
+    .match-vs { font-size:9px; font-weight:700; color:var(--muted); letter-spacing:.08em; }
+    .match-single {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 8px;
+      position: relative;
+      overflow: hidden;
+      height: 32px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 6px;
+    }
+    .match-single-icon { font-size: 20px; transition: transform 0.2s; z-index: 2; }
+    .match-single-icon:hover { transform: scale(1.15); }
+    .track {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 1px;
+      border-top: 1px dashed rgba(255,255,255,0.15);
+      display: none;
+      z-index: 1;
+    }
+    .sport-corrida .track { display: block; }
+    .sport-corrida .match-single-icon {
+      position: absolute;
+      transform: scaleX(-1);
+      animation: driveLoop 3s linear infinite;
+    }
+    .sport-corrida .match-single-icon:hover { transform: scaleX(-1) scale(1.15); }
+    @keyframes driveLoop {
+      0% { left: -30px; }
+      100% { left: 100%; }
+    }
+    .sport-foguete .match-single-icon {
+      position: absolute;
+      animation: rocketLaunch 2.5s linear infinite;
+    }
+    @keyframes rocketLaunch {
+      0% { transform: translate(-30px, 20px) scale(0.9); opacity: 0; }
+      15% { opacity: 1; }
+      85% { opacity: 1; }
+      100% { transform: translate(120px, -20px) scale(1.1); opacity: 0; }
+    }
+
+    .no-live { font-size:10px; color:var(--muted); text-align:center; padding:6px 0; line-height:1.5; }
+
+    .profs { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; margin-bottom:8px; }
+    .pb {
+      background:rgba(255,255,255,.02); border:1px solid var(--border); border-radius:7px;
+      padding:6px 3px; color:var(--text); cursor:pointer; font-size:10px; font-weight:500;
+      transition: all 0.2s ease; text-align:center; font-family:inherit;
+    }
+    .pb:hover { background:rgba(255,255,255,.06); border-color:var(--border-hover); transform: translateY(-1px) scale(1.03); box-shadow: 0 3px 8px rgba(0,0,0,0.15); }
+    .pb.on {
+      background:var(--primary); border-color:var(--primary);
+      box-shadow:0 0 10px var(--primary-glow); font-weight:700; color:#fff;
+      text-shadow:0 1px 2px rgba(0,0,0,0.5); transform: scale(1.02);
+    }
+    .pb.on:hover { box-shadow: 0 0 16px var(--primary-glow); transform: translateY(-1px) scale(1.05); }
+    .pb sub { font-size:8px; color:var(--muted); display:block; margin-top:1px; font-weight:400; }
+    .pb.on sub { color:#fff; font-weight:700; opacity:0.95; }
+
+    .cust { display:flex; flex-direction:column; gap:3px; margin-top:8px; padding-top:8px; border-top:1px solid var(--border); transition:opacity .3s; }
+    .cust-head { display:flex; justify-content:space-between; font-size:9px; color:var(--muted); }
+    .rng { -webkit-appearance:none; width:100%; height:3px; border-radius:2px; background:#334155; outline:none; cursor:pointer; transition: filter 0.2s; }
+    .rng:hover { filter: brightness(1.3); }
+    .rng::-webkit-slider-thumb {
+      -webkit-appearance:none; width:13px; height:13px; border-radius:50%;
+      background:var(--primary); cursor:pointer; transition: all 0.2s ease;
+      box-shadow: 0 0 0 0 var(--primary-glow);
+    }
+    .rng::-webkit-slider-thumb:hover { transform: scale(1.3); box-shadow: 0 0 8px var(--primary-glow); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-row">
+      <img src="icons/icon32.png" width="20" height="20" style="border-radius:4px" alt="">
+      <h1 data-i18n="title">Sem Atraso</h1>
+    </div>
+    <div class="hdr-right">
+      <button id="dbgBtn" class="dbg-btn" title="Debug">&#9881;</button>
+      <label class="sw"><input type="checkbox" id="tog" checked><span class="tr"></span></label>
+    </div>
+  </header>
+
+  <div class="card">
+    <div class="status">
+      <span class="s-label" data-i18n="delayLabel">Atraso da Transmiss&#227;o</span>
+      <div class="lat-big" id="lat">--</div>
+      <div class="sync-line" id="sync">
+        <span class="dot" id="dot"></span>
+        <span id="stxt" data-i18n="noStream">Sem live</span>
+      </div>
+      <div class="spd" id="spd">--</div>
+    </div>
+  </div>
+
+  <div class="sec" data-i18n="liveLabel">Live Detectada</div>
+
+  <div class="card" id="liveC">
+    <div class="live-row">
+      <div class="av-wrap">
+        <img class="av" id="av" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="">
+        <span class="live-badge" id="liveTag">LIVE</span>
+      </div>
+      <div class="info">
+        <div class="mq" id="mq"><span class="mq-inner" id="mqt" data-i18n="loading">Carregando...</span></div>
+        <div class="ch-row"><span id="ch">--</span></div>
+        <div class="vw-row" id="vw"></div>
+      </div>
+    </div>
+    <div class="match" id="matchBox" style="display:none">
+      <div class="match-team">
+        <img class="flag-img" id="fl1" src="" alt="">
+        <span class="match-name" id="mN1"></span>
+      </div>
+      <span class="match-vs">VS</span>
+      <div class="match-team">
+        <img class="flag-img" id="fl2" src="" alt="">
+        <span class="match-name" id="mN2"></span>
+      </div>
+    </div>
+    <div class="match-single" id="sportBox" style="display:none">
+      <div class="track" id="trackLine"></div>
+      <span class="match-single-icon" id="sIcon"></span>
+    </div>
+  </div>
+
+  <div class="card" id="noC" style="display:none">
+    <div class="no-live" data-i18n="noLive">Nenhuma live nesta aba.<br>Abra uma transmiss&#227;o no YouTube.</div>
+  </div>
+
+  <div class="sec" data-i18n="profileLabel">Perfil</div>
+  <div class="card">
+    <div class="profs">
+      <button class="pb" data-p="ultra"><span data-i18n="ultra">Ultra</span><sub>~0.8s</sub></button>
+      <button class="pb on" data-p="aggressive"><span data-i18n="aggressive">Agressivo</span><sub>~1.5s</sub></button>
+      <button class="pb" data-p="conservative"><span data-i18n="safe">Seguro</span><sub>~3.0s</sub></button>
+    </div>
+    <div class="cust" id="custArea">
+      <div class="cust-head"><span data-i18n="custom">Personalizado</span><span id="custV">1.5s</span></div>
+      <input type="range" class="rng" id="custR" min="0.5" max="5.0" step="0.1" value="1.5">
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
