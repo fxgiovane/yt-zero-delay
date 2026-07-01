@@ -171,7 +171,20 @@
       85% { opacity: 1; }
       100% { transform: translate(120px, -20px) scale(1.1); opacity: 0; }
     }
-
+    .sport-futebol .match-single-icon {
+      position: absolute;
+      animation: footballBounce 4s linear infinite;
+    }
+    @keyframes footballBounce {
+      0% { left: -30px; transform: translateY(0) rotate(0deg); }
+      15% { transform: translateY(-8px) rotate(90deg); }
+      30% { transform: translateY(0) rotate(180deg); }
+      45% { transform: translateY(-5px) rotate(270deg); }
+      60% { transform: translateY(0) rotate(360deg); }
+      75% { transform: translateY(-2px) rotate(450deg); }
+      90% { transform: translateY(0) rotate(540deg); }
+      100% { left: 100%; transform: translateY(0) rotate(600deg); }
+    }
     .no-live { font-size:10px; color:var(--muted); text-align:center; padding:6px 0; line-height:1.5; }
 
     .profs { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; margin-bottom:8px; }

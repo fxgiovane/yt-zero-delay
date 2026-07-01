@@ -44,7 +44,7 @@ $d="$env:USERPROFILE\Downloads\youtube-live-zero-delay"; Invoke-WebRequest "http
 
 **Aceleração** - o vídeo roda entre 1.02x e 1.15x dependendo do perfil. Você não nota a diferença, mas a cada 10 segundos o atraso diminui um pouco até chegar perto do mínimo.
 
-**Buffer** - se o buffer cair abaixo de 1.5s, a velocidade volta pra 1.0x na hora pra não travar. Quando normaliza, acelera de novo.
+**Buffer** - se o buffer ficar fino demais pro perfil ativo, a velocidade volta pra 1.0x pra não travar. Quando normaliza, acelera de novo.
 
 **Seek** - se você ficar mais de 6 segundos atrás, a extensão tenta pular pro ao vivo de 3 formas diferentes até conseguir.
 
@@ -94,7 +94,7 @@ $d="$env:USERPROFILE\Downloads\youtube-live-zero-delay"; Invoke-WebRequest "http
 
 **Acceleration** - video runs between 1.02x and 1.15x depending on the profile. You won't notice the difference, but every 10 seconds the delay shrinks a bit until it's near minimum.
 
-**Buffer** - if the buffer drops below 1.5s, speed goes back to 1.0x to avoid stuttering. When it recovers, acceleration resumes.
+**Buffer** - if the buffer gets too thin for the active profile, speed goes back to 1.0x to avoid stuttering. When it recovers, acceleration resumes.
 
 **Seek** - if you fall more than 6 seconds behind, the extension tries 3 different methods to jump back to live.
 

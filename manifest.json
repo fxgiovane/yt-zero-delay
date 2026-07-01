@@ -3,7 +3,7 @@
   "name": "Sem Atraso",
   "version": "2.0",
   "description": "Reduz o delay em transmiss\u00f5es ao vivo do YouTube para voc\u00ea estar sempre na frente.",
-  "permissions": ["activeTab", "storage"],
+  "permissions": ["storage"],
   "host_permissions": ["*://*.youtube.com/*"],
   "action": {
     "default_popup": "popup.html",

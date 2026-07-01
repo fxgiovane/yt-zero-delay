@@ -147,12 +147,14 @@ document.addEventListener("DOMContentLoaded", function () {
     if (d.country1 && d.country2) {
       if (d.code1) {
         fl1.src = "https://flagcdn.com/w40/" + d.code1.toLowerCase() + ".png";
+        fl1.onerror = function() { fl1.style.display = "none"; };
         fl1.style.display = "inline-block";
       } else { fl1.style.display = "none"; }
       mN1.textContent = d.country1;
 
       if (d.code2) {
         fl2.src = "https://flagcdn.com/w40/" + d.code2.toLowerCase() + ".png";
+        fl2.onerror = function() { fl2.style.display = "none"; };
         fl2.style.display = "inline-block";
       } else { fl2.style.display = "none"; }
       mN2.textContent = d.country2;
@@ -165,12 +167,14 @@ document.addEventListener("DOMContentLoaded", function () {
       matchBox.style.display = "none";
       var isCorrida = d.sport === "\uD83C\uDFCE\uFE0F" || d.sport === "\uD83C\uDFCE" || d.sport === "🏎️";
       var isFoguete = d.sport === "\uD83D\uDE80" || d.sport === "🚀";
+      var isFutebol = d.sport === "\u26BD" || d.sport === "⚽";
       sportBox.classList.toggle("sport-corrida", isCorrida);
       sportBox.classList.toggle("sport-foguete", isFoguete);
+      sportBox.classList.toggle("sport-futebol", isFutebol);
     } else {
       matchBox.style.display = "none";
       sportBox.style.display = "none";
-      sportBox.classList.remove("sport-corrida", "sport-foguete");
+      sportBox.classList.remove("sport-corrida", "sport-foguete", "sport-futebol");
     }
 
     var latVal = parseFloat(d.latency);

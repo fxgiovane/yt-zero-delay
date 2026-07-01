@@ -9,6 +9,7 @@ Thumbs.db
 *.zip
 html.html
 utils/
+.agents/
 
 node_modules/
 dist/

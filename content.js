@@ -216,13 +216,17 @@
       var now = Date.now();
       if (now - lastRecoveryTime > 12000) {
         lastRecoveryTime = now;
-        if (moviePlayer && typeof moviePlayer.reloadVideo === "function" && recoveryAttempts < 3) {
+        var stored = parseInt(sessionStorage.getItem("sa_recovery") || "0", 10);
+        if (moviePlayer && typeof moviePlayer.reloadVideo === "function" && stored < 3) {
           moviePlayer.reloadVideo();
-          recoveryAttempts++;
-        } else {
+          sessionStorage.setItem("sa_recovery", String(stored + 1));
+        } else if (stored < 5) {
+          sessionStorage.setItem("sa_recovery", String(stored + 1));
           location.reload();
         }
       }
+    } else {
+      sessionStorage.removeItem("sa_recovery");
     }
   }
 
@@ -250,8 +254,6 @@
           return Math.min(30, video.buffered.end(i) - cur);
         }
       }
-      var lastEnd = video.buffered.end(video.buffered.length - 1);
-      if (lastEnd > cur) return Math.min(30, lastEnd - cur);
     } catch (e) {}
     return 0;
   }
@@ -316,13 +318,10 @@
     if (method === 1) {
       var badge = document.querySelector(".ytp-live-badge");
       if (badge) { badge.click(); }
-      else { seekAttempt++; }
-    }
-
-    var fm = seekAttempt % 3;
-    if (fm === 2) {
+      else { document.dispatchEvent(new CustomEvent("DelayBridgeSeek")); }
+    } else if (method === 2) {
       document.dispatchEvent(new CustomEvent("DelayBridgeSeek"));
-    } else if (fm === 0) {
+    } else {
       video.currentTime = end - tgt;
     }
 
@@ -359,7 +358,7 @@
       return;
     }
 
-    if (scrubberDrift <= 1.5) { seekAttempt = 0; recoveryAttempts = 0; }
+    if (scrubberDrift <= 3.0) { seekAttempt = 0; recoveryAttempts = 0; }
 
     var ts = Date.now();
     if (ts - lastRateChangeTime < RATE_COOLDOWN) return;
@@ -369,7 +368,8 @@
     var buf = getBufferHealth();
     var lat = cdnLat > 0 ? cdnLat : (scrubberDrift > 2 ? scrubberDrift : 0);
 
-    if (buf < 1.5 || lat <= tgt) {
+    var minBuf = tgt < 1.5 ? tgt * 0.5 : 1.5;
+    if (buf < minBuf || lat <= tgt) {
       if (currentRate !== 1.0) {
         log("Norm 1.0x | Buf:" + buf.toFixed(1) + "s Lat:" + lat.toFixed(1) + "s");
         video.playbackRate = 1.0;
@@ -401,6 +401,7 @@
   setInterval(tick, 1000);
 
   window.addEventListener("yt-navigate-finish", function () {
+    if (video) { try { video.playbackRate = 1.0; } catch (e) {} }
     currentUrl = "";
     recoveryAttempts = 0;
     seekAttempt = 0;
