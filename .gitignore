@@ -1,0 +1,15 @@
+.DS_Store
+Thumbs.db
+*.local
+.vscode/
+.idea/
+
+*.tmp
+*.bak
+*.zip
+html.html
+utils/
+
+node_modules/
+dist/
+build/
