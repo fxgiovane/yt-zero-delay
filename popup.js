@@ -204,6 +204,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     var latVal = parseFloat(d.latency);
+    if (d.profile && d.profile !== profile) {
+      profile = d.profile;
+      syncBtns();
+    }
     var tgt = d.profile === "custom" ? d.customLatency : (tgtMap[d.profile] || 1.5);
 
     document.body.classList.toggle("off", !d.enabled);
@@ -256,7 +260,7 @@ document.addEventListener("DOMContentLoaded", function () {
       sync.className = "sync-line adj";
       spd.textContent = d.playbackRate.toFixed(2) + "x \u25B2";
       spd.className = "spd fast";
-    } else if (latVal <= tgt + 0.5) {
+    } else if (latVal <= tgt + 0.5 || (d.cdnFloor > 0 && latVal <= d.cdnFloor + 1.5 && d.playbackRate <= 1.01)) {
       lat.textContent = latVal.toFixed(1) + "s";
       lat.className = "lat-big ok";
       dot.style.display = "inline-block";

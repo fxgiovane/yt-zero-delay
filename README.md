@@ -12,7 +12,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/manifest-v3-blue?style=flat-square" alt="Manifest V3">
-  <img src="https://img.shields.io/badge/versão-2.0-8b5cf6?style=flat-square" alt="Versão 2.0">
+  <img src="https://img.shields.io/badge/versão-2.2-8b5cf6?style=flat-square" alt="Versão 2.2">
   <img src="https://img.shields.io/badge/licença-MIT-green?style=flat-square" alt="MIT">
   <img src="https://img.shields.io/badge/idiomas-PT--BR%20%7C%20EN-orange?style=flat-square" alt="i18n">
 </p>
@@ -52,10 +52,18 @@ $d="$env:USERPROFILE\Downloads\yt-zero-delay"; Invoke-WebRequest "https://github
 
 | Perfil | Normal | Máxima | Alvo |
 |--------|--------|--------|------|
-| Ultra | 1.10x | 1.15x | ~0.8s |
-| Agressivo | 1.06x | 1.10x | ~1.5s |
-| Seguro | 1.02x | 1.05x | ~3.0s |
-| Personalizado | 1.06x | 1.10x | você define |
+| Ultra | 1.15x | 1.25x | ~0.8s |
+| Agressivo | 1.10x | 1.20x | ~1.5s |
+| Seguro | 1.05x | 1.08x | ~3.0s |
+| Personalizado | 1.10x | 1.20x | você define |
+
+### Screenshots
+
+<p align="center">
+  <img src="screenshots/sincronizando.png" width="260" alt="Reduzindo delay">
+  &nbsp;&nbsp;
+  <img src="screenshots/sincronizado.png" width="260" alt="Sincronizado">
+</p>
 
 ### Proteções
 

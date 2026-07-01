@@ -18,6 +18,7 @@
   var stallTimes = [];
   var lastStall = 0;
   var stallCooldownUntil = 0;
+  var cdnFloor = 0;
 
   var bridgeScript = document.createElement("script");
   bridgeScript.src = chrome.runtime.getURL("bridge.js");
@@ -325,11 +326,16 @@
     var now = Date.now();
     if (now < stallCooldownUntil || now - lastStall < 5000) return;
     lastStall = now;
-    stallTimes = stallTimes.filter(function(t) { return now - t < 90000; });
+    stallTimes = stallTimes.filter(function(t) { return now - t < 60000; });
     stallTimes.push(now);
     if (stallTimes.length >= 2) {
       stallTimes = [];
-      stallCooldownUntil = now + 300000;
+      stallCooldownUntil = now + 60000;
+      var curCdn = bridgeData && bridgeData.latency > 0 ? bridgeData.latency : 0;
+      if (curCdn > 0 && (cdnFloor === 0 || curCdn < cdnFloor + 2.0)) {
+        cdnFloor = curCdn + 1.0;
+        log("CDN floor: " + cdnFloor.toFixed(1) + "s");
+      }
       var order = ["ultra", "aggressive", "custom", "conservative"];
       var idx = order.indexOf(settings.profile);
       if (idx >= 0 && idx < order.length - 1) {
@@ -493,7 +499,8 @@
       country2: d.country2,
       code1: d.code1,
       code2: d.code2,
-      sport: d.sport
+      sport: d.sport,
+      cdnFloor: cdnFloor
     };
   }
 
@@ -539,6 +546,7 @@
     if (isAd()) { if (currentRate !== 1.0) applyRate(1.0); return; }
     if (video.readyState < 3) { if (currentRate !== 1.0) applyRate(1.0); return; }
     if (isSeeking()) { if (currentRate !== 1.0) applyRate(1.0); return; }
+    if (Date.now() - lastStall < 5000) { return; }
 
     if (bridgeData.playerRate > 0) {
       var cur = bridgeData.playerRate;
@@ -574,7 +582,7 @@
     if (lastBufHealth !== null) drainEma = drainEma * 0.95 + (rawBuf - lastBufHealth) * 0.05;
     lastBufHealth = rawBuf;
 
-    var latFloor = Math.max(0.5, tgt * 0.8);
+    var latFloor = Math.max(Math.max(0.5, tgt * 0.8), cdnFloor);
     if (lat < latFloor) {
       if (currentRate !== 1.0) { applyRate(1.0); log("Norm 1.0x | Lat floor (" + latFloor.toFixed(1) + ")"); }
       catchingUp = false;
@@ -600,7 +608,7 @@
     }
 
     var rate = 1.0;
-    var critical = lat > tgt + 5.0;
+    var critical = lat > tgt + 5.0 && rawBuf > 3.0;
 
     switch (settings.profile) {
       case "ultra": rate = critical ? 1.25 : 1.15; break;
@@ -609,6 +617,8 @@
       case "custom": rate = critical ? 1.20 : 1.10; break;
       default: rate = 1.06;
     }
+
+    if (rawBuf < 1.5) rate = Math.min(rate, 1.05);
 
     if (currentRate !== rate) {
       log(rate + "x | CDN:" + lat.toFixed(1) + "s Buf:" + rawBuf.toFixed(1) + "s EMA:" + bufferEma.toFixed(1) + "s Drain:" + drainEma.toFixed(3) + " Tgt:" + tgt + "s");
@@ -635,6 +645,7 @@
     yieldedToUser = false;
     stallTimes = [];
     lastStall = 0;
+    cdnFloor = 0;
     grabPlayer();
   });
 
