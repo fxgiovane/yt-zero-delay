@@ -28,16 +28,16 @@ O YouTube mantém de 10 a 20 segundos de buffer entre o que você assiste e o si
 Cole no **PowerShell** e aperte Enter:
 
 ```powershell
-$d="$env:USERPROFILE\Downloads\youtube-live-zero-delay"; Invoke-WebRequest "https://github.com/fxgiovane/youtube-live-zero-delay/archive/refs/heads/main.zip" -OutFile "$d.zip"; Expand-Archive "$d.zip" -DestinationPath $d -Force; Remove-Item "$d.zip"; Write-Host "`nBaixado em: $d\youtube-live-zero-delay-main`nAgora abra chrome://extensions, ative o Modo do Desenvolvedor e carregue essa pasta." -ForegroundColor Green
+$d="$env:USERPROFILE\Downloads\yt-zero-delay"; Invoke-WebRequest "https://github.com/fxgiovane/yt-zero-delay/archive/refs/heads/main.zip" -OutFile "$d.zip"; Expand-Archive "$d.zip" -DestinationPath $d -Force; Remove-Item "$d.zip"; Write-Host "`nBaixado em: $d\yt-zero-delay-main`nAgora abra chrome://extensions, ative o Modo do Desenvolvedor e carregue essa pasta." -ForegroundColor Green
 ```
 
 ### Instalação manual
 
-1. [Baixe o ZIP](https://github.com/fxgiovane/youtube-live-zero-delay/archive/refs/heads/main.zip) e extraia onde preferir
+1. [Baixe o ZIP](https://github.com/fxgiovane/yt-zero-delay/archive/refs/heads/main.zip) e extraia onde preferir
 2. Acesse `chrome://extensions`
 3. Ative o **Modo do desenvolvedor** (canto superior direito)
 4. Clique em **Carregar sem compactação**
-5. Selecione a pasta `youtube-live-zero-delay-main`
+5. Selecione a pasta `yt-zero-delay-main`
 6. Abra uma live no YouTube e clique no ícone da extensão
 
 ### Como funciona
@@ -78,16 +78,16 @@ YouTube keeps a 10-20 second buffer between what you see and the actual live sig
 Paste in **PowerShell** and press Enter:
 
 ```powershell
-$d="$env:USERPROFILE\Downloads\youtube-live-zero-delay"; Invoke-WebRequest "https://github.com/fxgiovane/youtube-live-zero-delay/archive/refs/heads/main.zip" -OutFile "$d.zip"; Expand-Archive "$d.zip" -DestinationPath $d -Force; Remove-Item "$d.zip"; Write-Host "`nDownloaded to: $d\youtube-live-zero-delay-main`nNow open chrome://extensions, enable Developer Mode and load that folder." -ForegroundColor Green
+$d="$env:USERPROFILE\Downloads\yt-zero-delay"; Invoke-WebRequest "https://github.com/fxgiovane/yt-zero-delay/archive/refs/heads/main.zip" -OutFile "$d.zip"; Expand-Archive "$d.zip" -DestinationPath $d -Force; Remove-Item "$d.zip"; Write-Host "`nDownloaded to: $d\yt-zero-delay-main`nNow open chrome://extensions, enable Developer Mode and load that folder." -ForegroundColor Green
 ```
 
 ### Manual install
 
-1. [Download the ZIP](https://github.com/fxgiovane/youtube-live-zero-delay/archive/refs/heads/main.zip) and extract it
+1. [Download the ZIP](https://github.com/fxgiovane/yt-zero-delay/archive/refs/heads/main.zip) and extract it
 2. Go to `chrome://extensions`
 3. Enable **Developer mode** (top right)
 4. Click **Load unpacked**
-5. Select the `youtube-live-zero-delay-main` folder
+5. Select the `yt-zero-delay-main` folder
 6. Open a YouTube livestream and click the extension icon
 
 ### How it works
