@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   var tog = document.getElementById("tog");
+  var updDot = document.getElementById("updDot");
   var lat = document.getElementById("lat");
   var sync = document.getElementById("sync");
   var stxt = document.getElementById("stxt");
@@ -320,7 +321,7 @@ document.addEventListener("DOMContentLoaded", function () {
     send();
   });
 
-  chrome.storage.local.get(["enabled", "profile", "customLatency", "debug"], function (r) {
+  chrome.storage.local.get(["enabled", "profile", "customLatency", "debug", "updateAvailable"], function (r) {
     if (r.enabled !== undefined) enabled = r.enabled;
     if (r.profile !== undefined) profile = r.profile;
     if (r.customLatency !== undefined) customLat = r.customLatency;
@@ -330,7 +331,14 @@ document.addEventListener("DOMContentLoaded", function () {
     custR.value = customLat;
     custV.textContent = customLat.toFixed(1) + "s";
     syncBtns();
+    if (r.updateAvailable) updDot.classList.add("show");
     poll();
+  });
+
+  chrome.storage.onChanged.addListener(function(changes) {
+    if (changes.updateAvailable) {
+      updDot.classList.toggle("show", !!changes.updateAvailable.newValue);
+    }
   });
 
   setInterval(poll, 800);
