@@ -27,9 +27,9 @@
   document.addEventListener("DelayBridgeData", function (e) { bridgeData = e.detail; });
 
   var SEEK_COOLDOWN = 15000;
-  var CATCH_UP_BAND = 1.5;
+  var CATCH_UP_BAND = 0.5;
   var DRAIN_BRAKE = -0.5;
-  var BUFFER_FLOOR = 1.5;
+  var BUFFER_FLOOR = 0.5;
   var meta = { title: "", channel: "", avatar: "", viewers: "", lastRefresh: 0 };
 
   var C = {
@@ -574,8 +574,9 @@
     if (lastBufHealth !== null) drainEma = drainEma * 0.95 + (rawBuf - lastBufHealth) * 0.05;
     lastBufHealth = rawBuf;
 
-    if (lat < 2.0) {
-      if (currentRate !== 1.0) { applyRate(1.0); log("Norm 1.0x | Lat floor"); }
+    var latFloor = Math.max(0.5, tgt * 0.8);
+    if (lat < latFloor) {
+      if (currentRate !== 1.0) { applyRate(1.0); log("Norm 1.0x | Lat floor (" + latFloor.toFixed(1) + ")"); }
       catchingUp = false;
       return;
     }
@@ -602,11 +603,11 @@
     var critical = lat > tgt + 5.0;
 
     switch (settings.profile) {
-      case "ultra": rate = critical ? 1.15 : 1.10; break;
-      case "aggressive": rate = critical ? 1.10 : 1.06; break;
-      case "conservative": rate = critical ? 1.05 : 1.02; break;
-      case "custom": rate = critical ? 1.10 : 1.06; break;
-      default: rate = 1.03;
+      case "ultra": rate = critical ? 1.25 : 1.15; break;
+      case "aggressive": rate = critical ? 1.20 : 1.10; break;
+      case "conservative": rate = critical ? 1.08 : 1.05; break;
+      case "custom": rate = critical ? 1.20 : 1.10; break;
+      default: rate = 1.06;
     }
 
     if (currentRate !== rate) {
