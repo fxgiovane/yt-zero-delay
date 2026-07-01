@@ -217,15 +217,20 @@
     .sport-noticia .match-single-icon {
       position: absolute;
       left: calc(50% - 10px);
-      animation: newsSpin 3.5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+      animation: newsSpin 2s ease-in-out infinite;
     }
     @keyframes newsSpin {
-      0% { transform: scale(0) rotate(0deg); opacity: 0; }
-      10% { transform: scale(1.3) rotate(360deg); opacity: 1; }
-      15% { transform: scale(1.1) rotate(360deg); }
-      85% { transform: scale(1.1) rotate(360deg); opacity: 1; }
-      95% { transform: scale(0) rotate(720deg); opacity: 0; }
-      100% { transform: scale(0) rotate(720deg); opacity: 0; }
+      0% { transform: scale(1) rotate(0deg); }
+      10% { transform: scale(1.2) rotate(-3deg); }
+      20% { transform: scale(0.95) rotate(2deg); }
+      30% { transform: scale(1.15) rotate(-2deg); }
+      40% { transform: scale(0.95) rotate(1deg); }
+      50% { transform: scale(1.1) rotate(-1deg); }
+      60% { transform: scale(0.95) rotate(2deg); }
+      70% { transform: scale(1.15) rotate(-2deg); }
+      80% { transform: scale(0.95) rotate(1deg); }
+      90% { transform: scale(1.1) rotate(-1deg); }
+      100% { transform: scale(1) rotate(0deg); }
     }
     .sport-desenho .match-single-icon {
       position: absolute;
