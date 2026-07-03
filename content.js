@@ -391,7 +391,7 @@
   function grabMeta() {
     if (isAd()) return;
     var now = Date.now();
-    if (now - meta.lastRefresh < 1500) return;
+    if (now - meta.lastRefresh < 3000) return;
     meta.lastRefresh = now;
 
     var t = document.querySelector("ytd-watch-metadata #title h1 yt-formatted-string, ytd-watch-metadata #title h1, .ytp-title-link");
@@ -405,20 +405,11 @@
 
     meta.viewers = "";
 
-    // 1. Prioridade: Seletor do Player Nativo (Atualizado rápido e imune ao scroll da página)
-    var fsMeta = document.querySelector(".ytp-fullscreen-metadata .ytPlayerOverlayVideoDetailsRendererSubtitle span");
-    if (fsMeta) {
-      var vmf = (fsMeta.textContent || "").match(/([\d.,]+)\s*(?:assistindo|watching)/i);
-      if (vmf) meta.viewers = vmf[1];
-    }
-
-    if (!meta.viewers) {
-      var viewCount = document.querySelector("#view-count[aria-label]");
-      if (viewCount) {
-        var ariaLabel = viewCount.getAttribute("aria-label") || "";
-        var vm = ariaLabel.match(/([\d.,]+)\s*(?:assistindo|watching)/i);
-        if (vm) meta.viewers = vm[1];
-      }
+    var viewCount = document.querySelector("#view-count[aria-label]");
+    if (viewCount) {
+      var ariaLabel = viewCount.getAttribute("aria-label") || "";
+      var vm = ariaLabel.match(/([\d.,]+)\s*(?:assistindo|watching)/i);
+      if (vm) meta.viewers = vm[1];
     }
 
     if (!meta.viewers) {
