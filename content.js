@@ -1,4 +1,12 @@
 (function () {
+  var myInstanceId = Math.random();
+  window.__semAtrasoActiveInstance = myInstanceId;
+
+  function isContextValid() {
+    try { return !!(chrome && chrome.runtime && chrome.runtime.id); }
+    catch(e) { return false; }
+  }
+
   var settings = { enabled: true, profile: "aggressive", customLatency: 1.5, debug: false };
   var video = null;
   var moviePlayer = null;
@@ -99,6 +107,26 @@
     "emirados":["Emirados","ae"],"uae":["UAE","ae"],
     "nova zel\u00e2ndia":["Nova Zel\u00e2ndia","nz"],"new zealand":["New Zealand","nz"]
   };
+
+  var C_clean = {};
+  function cleanCountryName(str) {
+    if (!str) return "";
+    return str.toLowerCase()
+      .replace(/[áàâãä]/g, "a")
+      .replace(/[éèêë]/g, "e")
+      .replace(/[íìîï]/g, "i")
+      .replace(/[óòôõö]/g, "o")
+      .replace(/[úùûü]/g, "u")
+      .replace(/ç/g, "c")
+      .replace(/ñ/g, "n")
+      .trim();
+  }
+  for (var k in C) {
+    var cleanKey = cleanCountryName(k);
+    if (!C_clean[cleanKey] || k !== cleanKey) {
+      C_clean[cleanKey] = C[k];
+    }
+  }
 
   var p1 = {
     "f1":"\uD83C\uDFCE\uFE0F","formula 1":"\uD83C\uDFCE\uFE0F","f\u00f3rmula 1":"\uD83C\uDFCE\uFE0F",
@@ -276,8 +304,8 @@
     var low = title.toLowerCase();
     var m = low.match(/(?:^|\s)([\w\u00e0-\u00fc\-]+)\s*(?:x|vs\.?|versus)\s*([\w\u00e0-\u00fc\-]+)(?:\s|$)/i);
     if (m) {
-      var d1 = C[m[1].trim()];
-      var d2 = C[m[2].trim()];
+      var d1 = C_clean[cleanCountryName(m[1])];
+      var d2 = C_clean[cleanCountryName(m[2])];
       if (d1 && d2) return { country1: d1[0], country2: d2[0], code1: d1[1], code2: d2[1], sport: "\u26BD" };
     }
     for (var k1 in p1) {
@@ -537,6 +565,11 @@
   }
 
   function tick() {
+    if (!isContextValid() || window.__semAtrasoActiveInstance !== myInstanceId) {
+      clearInterval(tickIntervalId);
+      try { if (video) video.removeEventListener("waiting", onVideoWaiting); } catch(e) {}
+      return;
+    }
     if (!settings.enabled) return;
     if (!isWatchOrLivePage()) return;
 
@@ -626,7 +659,7 @@
     }
   }
 
-  setInterval(tick, 500);
+  var tickIntervalId = setInterval(tick, 500);
 
   window.addEventListener("yt-navigate-finish", function () {
     if (video) { try { applyRate(1.0); } catch (e) {} }
@@ -655,6 +688,7 @@
     } else if (req.action === "updateSettings") {
       settings = Object.assign({}, settings, req.settings);
       chrome.storage.local.set(settings);
+      yieldedToUser = false;
       if (!settings.enabled && video) {
         try { applyRate(1.0); } catch (e) {}
       }

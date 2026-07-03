@@ -15,7 +15,21 @@ function checkUpdate() {
   .catch(function() {});
 }
 
-chrome.runtime.onInstalled.addListener(checkUpdate);
+chrome.runtime.onInstalled.addListener(function() {
+  checkUpdate();
+  chrome.tabs.query({ url: "*://*.youtube.com/*" }, function(tabs) {
+    if (chrome.runtime.lastError || !tabs) return;
+    tabs.forEach(function(tab) {
+      if (!tab.id) return;
+      chrome.scripting.executeScript({
+        target: { tabId: tab.id, allFrames: true },
+        files: ["content.js"]
+      }, function() {
+        if (chrome.runtime.lastError) {}
+      });
+    });
+  });
+});
 
 chrome.alarms.create("updateCheck", { periodInMinutes: 1440 });
 chrome.alarms.onAlarm.addListener(function(alarm) {

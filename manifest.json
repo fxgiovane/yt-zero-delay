@@ -3,7 +3,7 @@
   "name": "Sem Atraso",
   "version": "2.2",
   "description": "Reduz o delay em transmiss\u00f5es ao vivo do YouTube para voc\u00ea estar sempre na frente.",
-  "permissions": ["storage", "alarms"],
+  "permissions": ["storage", "alarms", "scripting"],
   "host_permissions": ["*://*.youtube.com/*", "https://api.github.com/*"],
   "background": { "service_worker": "background.js" },
   "action": {
