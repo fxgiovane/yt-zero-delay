@@ -1,6 +1,18 @@
-var CURRENT_VERSION = "2.2";
+var CURRENT_VERSION = chrome.runtime.getManifest().version;
 var REPO = "fxgiovane/yt-zero-delay";
 var CHECK_INTERVAL = 24 * 60 * 60 * 1000;
+
+function isNewer(remote, local) {
+  var r = remote.split(".").map(Number);
+  var l = local.split(".").map(Number);
+  for (var i = 0; i < Math.max(r.length, l.length); i++) {
+    var rv = r[i] || 0;
+    var lv = l[i] || 0;
+    if (rv > lv) return true;
+    if (rv < lv) return false;
+  }
+  return false;
+}
 
 function checkUpdate() {
   fetch("https://api.github.com/repos/" + REPO + "/releases/latest", {
@@ -9,7 +21,7 @@ function checkUpdate() {
   .then(function(r) { return r.json(); })
   .then(function(data) {
     var latest = (data.tag_name || "").replace(/^v/, "");
-    var hasUpdate = latest && latest !== CURRENT_VERSION && latest > CURRENT_VERSION;
+    var hasUpdate = latest && isNewer(latest, CURRENT_VERSION);
     chrome.storage.local.set({ updateAvailable: hasUpdate, latestVersion: latest });
   })
   .catch(function() {});
