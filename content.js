@@ -409,26 +409,28 @@
 
     meta.viewers = "";
 
+    var rx = /([\d.,\u00a0\s]+(?:[KkMm](?![a-zA-Z\u00e0-\u00fc]))?)\s*.*?(?:assistindo|watching|espectadores|directo|direct|spectateurs|zuschauer|spettatori|\u8996\u8074|\uC2DC\uCCAD|\u89C2\u770B|\u0437\u0440\u0438\u0442\u0435\u043B|\u0645\u0634\u0627\u0647\u062F|\u0926\u0930\u094D\u0936\u0915|izleyici|izliyor|menonton|widz|kijkers)/i;
+
     var viewCount = document.querySelector("#view-count[aria-label]");
     if (viewCount) {
       var ariaLabel = viewCount.getAttribute("aria-label") || "";
-      var vm = ariaLabel.match(/([\d.,]+)\s*(?:assistindo|watching)/i);
-      if (vm) meta.viewers = vm[1];
+      var vm = ariaLabel.match(rx);
+      if (vm) meta.viewers = vm[1].trim();
     }
 
     if (!meta.viewers) {
       var vcSpan = document.querySelector("ytd-video-view-count-renderer .view-count");
       if (vcSpan) {
-        var vm2 = (vcSpan.textContent || "").match(/([\d.,]+)\s*(?:assistindo|watching)/i);
-        if (vm2) meta.viewers = vm2[1];
+        var vm2 = (vcSpan.textContent || "").match(rx);
+        if (vm2) meta.viewers = vm2[1].trim();
       }
     }
 
     if (!meta.viewers) {
       var spans = document.querySelectorAll("ytd-watch-metadata #info span, #info-strings yt-formatted-string");
       for (var i = 0; i < spans.length; i++) {
-        var vm3 = (spans[i].textContent || "").match(/([\d.,]+)\s*(?:assistindo|watching)/i);
-        if (vm3) { meta.viewers = vm3[1]; break; }
+        var vm3 = (spans[i].textContent || "").match(rx);
+        if (vm3) { meta.viewers = vm3[1].trim(); break; }
       }
     }
   }
