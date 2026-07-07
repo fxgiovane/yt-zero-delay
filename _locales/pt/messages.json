@@ -1,0 +1,23 @@
+{
+  "extName": { "message": "Sem Atraso" },
+  "extDesc": { "message": "Reduz o delay em transmissões ao vivo do YouTube para você estar sempre na frente." },
+  "title": { "message": "Sem Atraso" },
+  "delayLabel": { "message": "Atraso da Transmissão" },
+  "synced": { "message": "Sincronizado" },
+  "adjusting": { "message": "Ajustando latência..." },
+  "disabled": { "message": "Desativado" },
+  "error": { "message": "Erro no player" },
+  "noStream": { "message": "Sem live" },
+  "seeking": { "message": "Sincronizando atraso..." },
+  "reducing": { "message": "Reduzindo delay..." },
+  "liveLabel": { "message": "Live Detectada" },
+  "loading": { "message": "Carregando..." },
+  "profileLabel": { "message": "Perfil" },
+  "custom": { "message": "Personalizado" },
+  "noLive": { "message": "Nenhuma live nesta aba.<br>Abra uma transmissão no YouTube." },
+  "ultra": { "message": "Ultra" },
+  "aggressive": { "message": "Agressivo" },
+  "safe": { "message": "Seguro" },
+  "watching": { "message": "assistindo" },
+  "ad": { "message": "Anúncio comercial..." }
+}

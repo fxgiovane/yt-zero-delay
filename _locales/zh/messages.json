@@ -1,0 +1,23 @@
+{
+  "extName": { "message": "零延迟" },
+  "extDesc": { "message": "减少YouTube直播延迟，让你始终领先一步。" },
+  "title": { "message": "零延迟" },
+  "delayLabel": { "message": "直播延迟" },
+  "synced": { "message": "已同步" },
+  "adjusting": { "message": "正在调整延迟..." },
+  "disabled": { "message": "已禁用" },
+  "error": { "message": "播放器错误" },
+  "noStream": { "message": "无直播" },
+  "seeking": { "message": "正在同步延迟..." },
+  "reducing": { "message": "正在缩短延迟..." },
+  "liveLabel": { "message": "检测到直播" },
+  "loading": { "message": "加载中..." },
+  "profileLabel": { "message": "配置" },
+  "custom": { "message": "自定义" },
+  "noLive": { "message": "此标签页没有直播。<br>请打开YouTube直播。" },
+  "ultra": { "message": "极速" },
+  "aggressive": { "message": "激进" },
+  "safe": { "message": "安全" },
+  "watching": { "message": "人正在观看" },
+  "ad": { "message": "广告播放中..." }
+}
