@@ -12,7 +12,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/manifest-v3-blue?style=flat-square" alt="Manifest V3">
-  <img src="https://img.shields.io/badge/versão-2.4.0-8b5cf6?style=flat-square" alt="Versão 2.4.0">
+  <img src="https://img.shields.io/badge/versão-2.5.0-8b5cf6?style=flat-square" alt="Versão 2.5.0">
   <img src="https://img.shields.io/badge/licença-MIT-green?style=flat-square" alt="MIT">
   <img src="https://img.shields.io/badge/idiomas-18-orange?style=flat-square" alt="i18n">
 </p>

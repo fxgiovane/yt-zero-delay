@@ -31,6 +31,8 @@
   var yieldedAt = 0;
   var lastCdnFloorDecay = 0;
   var tickCount = 0;
+  var lastUpgrade = 0;
+  var userProfileOverride = 0;
 
   var bridgeScript = document.createElement("script");
   bridgeScript.src = chrome.runtime.getURL("bridge.js");
@@ -360,19 +362,20 @@
     lastStall = now;
     stallTimes = stallTimes.filter(function(t) { return now - t < 60000; });
     stallTimes.push(now);
-    if (stallTimes.length >= 2) {
+    if (stallTimes.length >= 3) {
       stallTimes = [];
       stallCooldownUntil = now + 60000;
       var curCdn = bridgeData && bridgeData.latency > 0 ? bridgeData.latency : 0;
       if (curCdn > 0 && (cdnFloor === 0 || curCdn < cdnFloor + 2.0)) {
-        cdnFloor = curCdn + 1.0;
-        log("CDN floor: " + cdnFloor.toFixed(1) + "s");
+        cdnFloor = Math.min(curCdn + 0.5, target() * 3);
+        log("CDN floor: " + cdnFloor.toFixed(1) + "s (cap " + (target() * 3).toFixed(1) + ")");
       }
-      var order = ["ultra", "aggressive", "custom", "conservative"];
+      var order = ["ultra", "aggressive", "conservative"];
       var idx = order.indexOf(settings.profile);
-      if (idx >= 0 && idx < order.length - 1) {
+      if (idx >= 0 && idx < order.length - 1 && now - userProfileOverride > 60000) {
         settings.profile = order[idx + 1];
         chrome.storage.local.set({ profile: settings.profile });
+        lastUpgrade = now;
         log("Stall watchdog: downgrade para " + settings.profile);
       }
     }
@@ -588,10 +591,21 @@
       log("Heartbeat #" + tickCount + " | profile=" + settings.profile + " yielded=" + yieldedToUser + " cdnFloor=" + cdnFloor.toFixed(1) + " stallCooldown=" + (stallCooldownUntil > now ? ((stallCooldownUntil - now) / 1000).toFixed(0) + "s" : "off") + " catchingUp=" + catchingUp + " rate=" + currentRate + " cdn=" + cdnLat.toFixed(1) + " bridge=" + bridgeData.statsAvailable);
     }
 
-    if (cdnFloor > 0 && now - lastCdnFloorDecay > 300000 && now - lastStall > 300000) {
+    if (cdnFloor > 0 && now - lastCdnFloorDecay > 120000 && now - lastStall > 120000) {
       lastCdnFloorDecay = now;
-      cdnFloor = Math.max(0, cdnFloor - 0.5);
+      cdnFloor = Math.max(0, cdnFloor - 1.0);
       log("CDN floor decay: " + cdnFloor.toFixed(1) + "s");
+    }
+
+    if (now - lastStall > 180000 && now - lastUpgrade > 180000 && now - userProfileOverride > 180000) {
+      var upgradeOrder = ["conservative", "aggressive", "ultra"];
+      var ui = upgradeOrder.indexOf(settings.profile);
+      if (ui >= 0 && ui < upgradeOrder.length - 1) {
+        settings.profile = upgradeOrder[ui + 1];
+        chrome.storage.local.set({ profile: settings.profile });
+        lastUpgrade = now;
+        log("Auto-upgrade para " + settings.profile);
+      }
     }
 
     grabPlayer();
@@ -730,6 +744,9 @@
       settings = Object.assign({}, settings, req.settings);
       chrome.storage.local.set(settings);
       yieldedToUser = false;
+      userProfileOverride = Date.now();
+      lastUpgrade = Date.now();
+      stallTimes = [];
       if (!settings.enabled && video) {
         try { applyRate(1.0); } catch (e) {}
       }

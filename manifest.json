@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extName__",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "default_locale": "pt_BR",
   "description": "__MSG_extDesc__",
   "permissions": ["storage", "alarms", "scripting"],
