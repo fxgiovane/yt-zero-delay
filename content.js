@@ -734,6 +734,8 @@
     cdnFloor = 0;
     lastCdnFloorDecay = 0;
     tickCount = 0;
+    lastUpgrade = 0;
+    userProfileOverride = 0;
     grabPlayer();
   });
 
